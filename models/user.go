@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"event-booking/db"
 	"event-booking/utils"
 )
@@ -46,6 +47,14 @@ func (u User) ValidateCredentials() error {
 	err := row.Scan(&retrievedPassword)
 
 	if err != nil {
-		return err
+		return errors.New("credentials invalid")
 	}
+
+	passwordIsValid := utils.CheckPasswordHash(u.Password, retrievedPassword)
+
+	if !passwordIsValid {
+		return errors.New("credentials invalid")
+	}
+
+	return nil
 }
